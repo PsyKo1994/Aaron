@@ -127,11 +127,11 @@ namespace ConsoleApp1.Commands
             await ctx.Channel.SendMessageAsync(string.Join("\n", results)).ConfigureAwait(false);
          }
 
-        //Test
+        //Poll Command
         [Command("Poll")]
         public async Task Poll(CommandContext ctx)
         {
-            var Message = await ctx.Channel.SendMessageAsync("test").ConfigureAwait(false);
+            var Message = await ctx.Channel.SendMessageAsync("Poll").ConfigureAwait(false);
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendanceyes:"));
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancenope:"));
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancemaybe:"));
@@ -163,7 +163,7 @@ namespace ConsoleApp1.Commands
                 //Add reaction to drivers
                 if (drivers.Count == 0)
                 {
-                    drivers.Add(reaction);
+                    drivers.Add(message.Result.User.Username + "     " + message.Result.Emoji);
                 }
 
                 bool reactionAdded = false;
@@ -172,7 +172,7 @@ namespace ConsoleApp1.Commands
                     var match = Regex.Match(reaction, @"<(.+?)>").Groups[1].Value;
                     if (drivers[i].Contains(match))
                     {
-                        drivers[i] = reaction;
+                        drivers[i] = message.Result.User.Username + "     " + message.Result.Emoji;
                         reactionAdded = true;
                     }
                 }
