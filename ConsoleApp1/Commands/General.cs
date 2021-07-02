@@ -153,6 +153,7 @@ namespace ConsoleApp1.Commands
 
                 //string reaction = "<" + message.Result.User.Username + ">" + message.Result.Emoji + "|" + message.Result.Message.Id.ToString();
                 string reaction = "<" + message.Result.User.Username + ">" + message.Result.Emoji;
+                string reactionToAdd = message.Result.Emoji + "   " + message.Result.User.Username;
 
                 //Delete user reaction
                 if (message.Result.User.IsBot == false)
@@ -163,7 +164,7 @@ namespace ConsoleApp1.Commands
                 //Add reaction to drivers
                 if (drivers.Count == 0)
                 {
-                    drivers.Add(message.Result.User.Username + "     " + message.Result.Emoji);
+                    drivers.Add(reactionToAdd);
                 }
 
                 bool reactionAdded = false;
@@ -172,15 +173,18 @@ namespace ConsoleApp1.Commands
                     var match = Regex.Match(reaction, @"<(.+?)>").Groups[1].Value;
                     if (drivers[i].Contains(match))
                     {
-                        drivers[i] = message.Result.User.Username + "     " + message.Result.Emoji;
+                        drivers[i] = reactionToAdd;
                         reactionAdded = true;
                     }
                 }
 
                 if (reactionAdded == false)
                 {
-                    drivers.Add(reaction);
+                    drivers.Add(reactionToAdd);
                 }
+
+                //Sort array of drivers
+                drivers.Sort();
 
                 //Add new reaction to message and write message
                 string combindedString = string.Join("\n", drivers.ToArray());
