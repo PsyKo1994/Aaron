@@ -27,8 +27,8 @@ namespace ConsoleApp1
                 x.Service<AaronService>(s =>
                 {
                     s.ConstructUsing(AaronService => new AaronService());
-                    s.WhenStarted(AaronService => AaronService.Aaron());
-                    s.WhenStopped(AaronService => AaronService.Aaron());
+                    s.WhenStarted(AaronService => AaronService.Start());
+                    s.WhenStopped(AaronService => AaronService.Stop());
                 });
 
                 x.RunAsLocalSystem();
