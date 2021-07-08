@@ -49,7 +49,7 @@ namespace ConsoleApp1
 
             var commandsConfig = new CommandsNextConfiguration
             {
-                StringPrefixes = new string[] {configJson.Prefix},
+                StringPrefixes = new string[] { configJson.Prefix },
                 EnableMentionPrefix = true,
                 EnableDms = true
             };

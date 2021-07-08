@@ -31,8 +31,9 @@ namespace ConsoleApp1.Commands
         //Add Race
         [Command("Add")]
         [Description("Add a race")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task Add(CommandContext ctx,
-            [Description("Add a tier")]  int tier
+            [Description("Add a tier")] int tier
             , [Description("Add a round")] int round
             , [Description("Add a season")] int season
             , [Description("Add a date")] string raceDate
@@ -64,7 +65,8 @@ namespace ConsoleApp1.Commands
         //Race
         [Command("Race")]
         [Description("Set up race")]
-        public async Task Race(CommandContext ctx, [Description("Add all race info")]  string raceInfo)
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
+        public async Task Race(CommandContext ctx, [Description("Add all race info")] string raceInfo)
         {
             //Edit last message sent and add emoji's
             var Message = await ctx.Channel.SendMessageAsync(raceInfo).ConfigureAwait(false);
@@ -80,6 +82,7 @@ namespace ConsoleApp1.Commands
 
         //Poll
         [Command("pollTest")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task PollTest(CommandContext ctx, TimeSpan duration, string pollID)//, params DiscordEmoji[] emojiOptions)
         {
             var interactivity = ctx.Client.GetInteractivity();
@@ -109,7 +112,7 @@ namespace ConsoleApp1.Commands
             var result = await interactivity.CollectReactionsAsync(pollMessage, duration).ConfigureAwait(false);
             var distinctResult = result.Distinct();
 
-            foreach(var elm in distinctResult)
+            foreach (var elm in distinctResult)
             {
                 var emoji = elm.Emoji.Name.ToString();
                 var user = elm.Users.ToList();
@@ -120,15 +123,16 @@ namespace ConsoleApp1.Commands
                 ReadWrite.Write(reaction);
             }
 
-            
+
 
             var results = result.Select(x => $"{x.Emoji}: {x.Total}");
 
             await ctx.Channel.SendMessageAsync(string.Join("\n", results)).ConfigureAwait(false);
-         }
+        }
 
         //Poll Command
         [Command("Poll")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task Poll(CommandContext ctx)
         {
             var Message = await ctx.Channel.SendMessageAsync("Poll").ConfigureAwait(false);
@@ -146,7 +150,7 @@ namespace ConsoleApp1.Commands
             DateTime endDate = DateTime.Now.AddDays(7);
 
 
-            while(startDate < endDate)
+            while (startDate < endDate)
             {
                 var interactivity = ctx.Client.GetInteractivity();
                 var message = await interactivity.WaitForReactionAsync(x => x.Message.Id == Message.Id);
@@ -191,6 +195,24 @@ namespace ConsoleApp1.Commands
                 await Message.ModifyAsync(combindedString);
             }
 
+        }
+
+        //Mute User
+        [Command("Mute")]
+        [Description("Mute a user for a set time")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
+        public async Task Mute(CommandContext ctx, [Description("User to mute")] string user, [Description("Duration of mute time")] int time)
+        {
+            //Get message
+            await ctx.Channel.SendMessageAsync(user + time).ConfigureAwait(false);
+
+            //Get user to mute
+            //ctx.Client.GetUserAsync(168590267593654273)
+            //public IReadOnlyDictionary<ulong, DiscordMember> Members { get; }
+            var allmembers = ctx.Guild.GetAllMembersAsync();
+            var guildMembers = ctx.Channel.Guild.Members;
+            var userToMute = ctx.Client.GetUserAsync(168590267593654273);
+            await ctx.Channel.SendMessageAsync("").ConfigureAwait(false);
         }
     }
 
