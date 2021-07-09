@@ -34,7 +34,9 @@ namespace ConsoleApp1
                 Token = configJson.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
-                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug
+                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
+                Intents = DiscordIntents.All
+                
             };
             
             Client = new DiscordClient(config);

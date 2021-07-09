@@ -3,6 +3,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Build.Tasks;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,18 +202,19 @@ namespace ConsoleApp1.Commands
         [Command("Mute")]
         [Description("Mute a user for a set time")]
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task Mute(CommandContext ctx, [Description("User to mute")] string user, [Description("Duration of mute time")] int time)
+        public async Task Mute(CommandContext ctx, [Description("User to mute")] DiscordMember user, [Description("Duration of mute time in minutes")] int time)
         {
-            //Get message
-            await ctx.Channel.SendMessageAsync(user + time).ConfigureAwait(false);
+            //Get role
+            DiscordRole muteRole = ctx.Guild.GetRole(862770194475646996);
 
-            //Get user to mute
-            //ctx.Client.GetUserAsync(168590267593654273)
-            //public IReadOnlyDictionary<ulong, DiscordMember> Members { get; }
-            var allmembers = ctx.Guild.GetAllMembersAsync();
-            var guildMembers = ctx.Channel.Guild.Members;
-            var userToMute = ctx.Client.GetUserAsync(168590267593654273);
-            await ctx.Channel.SendMessageAsync("").ConfigureAwait(false);
+            await user.GrantRoleAsync(muteRole);
+            await ctx.Channel.SendMessageAsync(user.Username + " has been sent to Principle O’Shaughnessy office for " + time + " minutes").ConfigureAwait(false);
+
+            //Sleep for x amount of minutes
+            System.Threading.Thread.Sleep(time * 60 * 1000);
+
+            //Unmute user
+            await user.RevokeRoleAsync(muteRole).ConfigureAwait(false);
         }
     }
 
@@ -238,6 +240,10 @@ old code
             await ctx.Channel.SendMessageAsync(message.Result.User.Username).ConfigureAwait(false);
             await ctx.Channel.SendMessageAsync(message.Result.Message.Id.ToString()).ConfigureAwait(false);
 
+Ways to get members
+            var member = ctx.Message.MentionedUsers.First();
+            await DiscordMember dmember = ctx.Guild.GetMemberAsync(member.Id);
+            var userToMute = ctx.Client.GetUserAsync((ulong)Convert.ToInt64(Regex.Replace(user, "[^0-9]", "")));
 
 Roles
 
