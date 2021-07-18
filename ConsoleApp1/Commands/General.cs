@@ -229,6 +229,18 @@ namespace ConsoleApp1.Commands
             var messages = await ctx.Channel.GetMessagesAsync(amount);
             await ctx.Channel.DeleteMessagesAsync(messages);
         }
+
+        //Create adhoc voice channel on a timer
+        [Command("CreateVoice")]
+        [Description("Create adhoc voice channel on a timer")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
+        public async Task CreateVoice(CommandContext ctx, [Description("Name of channel")] string name, [Description("time in minutes until channel is nuked")] int time)
+        {
+            var tempChannel = await ctx.Guild.CreateVoiceChannelAsync(name, null, null, 20);
+            await ctx.Channel.SendMessageAsync(name + "voie channel has been created and will be deleted in " + time + " minutes").ConfigureAwait(false);
+            System.Threading.Thread.Sleep(time * 60 * 1000);
+            await tempChannel.DeleteAsync();
+        }
     }
 
     /*
