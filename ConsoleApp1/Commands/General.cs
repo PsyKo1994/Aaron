@@ -219,6 +219,16 @@ namespace ConsoleApp1.Commands
             //Unmute user
             await user.RevokeRoleAsync(muteRole).ConfigureAwait(false);
         }
+
+        //Delete all messaged in a channel, can't delete messages older than 14 days
+        [Command("DeleteLast")]
+        [Description("Deletes all messaged in a channel, can't delete messages older than 14 days")]
+        [RequireRoles(RoleCheckMode.Any, "Admins")]
+        public async Task DeleteAll(CommandContext ctx, [Description("How many messages to delete")] int amount)
+        {
+            var messages = await ctx.Channel.GetMessagesAsync(amount);
+            await ctx.Channel.DeleteMessagesAsync(messages);
+        }
     }
 
     /*
