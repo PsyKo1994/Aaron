@@ -136,6 +136,10 @@ namespace ConsoleApp1.Commands
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task Poll(CommandContext ctx)
         {
+            //Delete the poll command
+            await ctx.Message.DeleteAsync();
+            
+            //Create poll message
             var Message = await ctx.Channel.SendMessageAsync("Poll").ConfigureAwait(false);
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendanceyes:"));
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancenope:"));
@@ -147,11 +151,10 @@ namespace ConsoleApp1.Commands
             List<string> drivers = new List<string>();
 
             //Run Poll for 7 Days
-            DateTime startDate = DateTime.Now;
-            DateTime endDate = DateTime.Now.AddDays(7);
+            //DateTime startDate = DateTime.Now;
+            //DateTime endDate = DateTime.Now.AddDays(7);
 
-
-            while (startDate < endDate)
+            while (ctx.Channel.GetMessageAsync(Message.Id) != null)
             {
                 var interactivity = ctx.Client.GetInteractivity();
                 var message = await interactivity.WaitForReactionAsync(x => x.Message.Id == Message.Id);
