@@ -23,7 +23,7 @@ namespace ConsoleApp1.Commands
         }
 
         //Command to respond to thank you
-        [Command("Good_bot")]
+        [Command("GoodBot")]
         public async Task PingReply(CommandContext ctx)
         {
             await ctx.Channel.SendMessageAsync("Woof Woof").ConfigureAwait(false);
@@ -224,11 +224,12 @@ namespace ConsoleApp1.Commands
         [Command("DeleteLast")]
         [Description("Deletes all messaged in a channel, can't delete messages older than 14 days")]
         [RequireRoles(RoleCheckMode.Any, "Admins")]
-        public async Task DeleteAll(CommandContext ctx, [Description("How many messages to delete")] int amount)
+        public async Task DeleteLast(CommandContext ctx, [Description("How many messages to delete. Limit is 100")] int amount)
         {
-            var messages = await ctx.Channel.GetMessagesAsync(amount);
+            var messages = await ctx.Channel.GetMessagesAsync(amount + 1);
             await ctx.Channel.DeleteMessagesAsync(messages);
         }
+
 
         //Create adhoc voice channel on a timer
         [Command("CreateVoice")]
