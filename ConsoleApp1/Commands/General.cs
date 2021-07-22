@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -230,6 +231,35 @@ namespace ConsoleApp1.Commands
             await ctx.Channel.DeleteMessagesAsync(messages);
         }
 
+        //Lock Incidents
+        [Command("LockIncidents")]
+        [Description("Locks incident channels from Tier X roles")]
+        [RequireRoles(RoleCheckMode.Any, "Admins", "Head")]
+        public async Task LockIncidents(CommandContext ctx)
+        {
+            //Lock Tier 1 incident channel
+            var channelToLock = ctx.Guild.GetChannel(683482799780528128);
+            var roleToLock = ctx.Guild.GetRole(491762196775305227);
+            var reserveRole = ctx.Guild.GetRole(360955418870022144);
+            await channelToLock.AddOverwriteAsync(roleToLock, Permissions.None);
+            await channelToLock.AddOverwriteAsync(reserveRole, Permissions.None);
+            await channelToLock.SendMessageAsync("@Tier 1 , @Reserve Drivers Incident reporting is now locked");
+        }
+
+        //Unlock Incidents
+        [Command("UnlockIncidents")]
+        [Description("Unlocks incident channels from Tier X roles")]
+        [RequireRoles(RoleCheckMode.Any, "Admins", "Head")]
+        public async Task UnlockIncidents(CommandContext ctx)
+        {
+            //Unlock Tier 1 incident channel
+            var channelToUnlock = ctx.Guild.GetChannel(683482799780528128);
+            var roleToUnlock = ctx.Guild.GetRole(491762196775305227);
+            var reserveRole = ctx.Guild.GetRole(360955418870022144);
+            await channelToUnlock.AddOverwriteAsync(roleToUnlock, Permissions.SendMessages);
+            await channelToUnlock.AddOverwriteAsync(reserveRole, Permissions.SendMessages);
+            await channelToUnlock.SendMessageAsync("@Tier 1 , @Reserve Drivers Incident reporting is now open");
+        }
 
         //Create adhoc voice channel on a timer
         [Command("CreateVoice")]
