@@ -243,7 +243,7 @@ namespace ConsoleApp1.Commands
             var reserveRole = ctx.Guild.GetRole(360955418870022144);
             await channelToLock.AddOverwriteAsync(roleToLock, Permissions.None);
             await channelToLock.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock.SendMessageAsync("@Tier 1 , @Reserve Drivers Incident reporting is now locked");
+            await channelToLock.SendMessageAsync($"<@&{roleToLock.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
         }
 
         //Unlock Incidents
@@ -258,7 +258,7 @@ namespace ConsoleApp1.Commands
             var reserveRole = ctx.Guild.GetRole(360955418870022144);
             await channelToUnlock.AddOverwriteAsync(roleToUnlock, Permissions.SendMessages);
             await channelToUnlock.AddOverwriteAsync(reserveRole, Permissions.SendMessages);
-            await channelToUnlock.SendMessageAsync("@Tier 1 , @Reserve Drivers Incident reporting is now open");
+            await channelToUnlock.SendMessageAsync($"<@&{roleToUnlock.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
         }
 
         //Create adhoc voice channel on a timer
