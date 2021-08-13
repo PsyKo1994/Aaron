@@ -14,5 +14,17 @@ namespace ConsoleApp1
 
         [JsonProperty("prefix")]
         public string Prefix { get; private set; }
+
+        [JsonProperty("datasource")]
+        public string Datasource { get; private set; }
+
+        [JsonProperty("database")]
+        public string Database { get; private set; }
+
+        [JsonProperty("username")]
+        public string Username { get; private set; }
+
+        [JsonProperty("password")]
+        public string Password { get; private set; }
     }
 }

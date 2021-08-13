@@ -7,6 +7,7 @@ using Microsoft.Build.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,122 +17,6 @@ namespace ConsoleApp1.Commands
 {
     public class General : BaseCommandModule
     {
-        //Command to test ping
-        [Command("Band")]
-        public async Task Ping(CommandContext ctx)
-        {
-            await ctx.Channel.SendMessageAsync("Band is a dirty driver").ConfigureAwait(false);
-        }
-
-        //Command to respond to thank you
-        [Command("GoodBot")]
-        public async Task PingReply(CommandContext ctx)
-        {
-            await ctx.Channel.SendMessageAsync("Woof Woof").ConfigureAwait(false);
-        }
-
-        //Add Race
-        [Command("Add")]
-        [Description("Add a race")]
-        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task Add(CommandContext ctx,
-            [Description("Add a tier")] int tier
-            , [Description("Add a round")] int round
-            , [Description("Add a season")] int season
-            , [Description("Add a date")] string raceDate
-            , [Description("Add a track")] string track)
-        {
-            await ctx.Channel.SendMessageAsync("Tier" + tier + " Attendance Form for Round " + round + " Season " + season + " | " + raceDate + " | Track: " + track + " 7pm Melbourne / 9pm NZ").ConfigureAwait(false);
-        }
-
-        //Message Response
-        [Command("Response")]
-        public async Task Response(CommandContext ctx)
-        {
-            var interactivity = ctx.Client.GetInteractivity();
-
-            var message = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel);
-            await ctx.Channel.SendMessageAsync(message.Result.Content).ConfigureAwait(false);
-        }
-
-        //Emoji Response
-        [Command("ResponseReaction")]
-        public async Task ResponseReaction(CommandContext ctx)
-        {
-            var interactivity = ctx.Client.GetInteractivity();
-
-            var message = await interactivity.WaitForReactionAsync(x => x.Channel == ctx.Channel);
-            await ctx.Channel.SendMessageAsync(message.Result.Emoji).ConfigureAwait(false);
-        }
-
-        //Race
-        [Command("Race")]
-        [Description("Set up race")]
-        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task Race(CommandContext ctx, [Description("Add all race info")] string raceInfo)
-        {
-            //Edit last message sent and add emoji's
-            var Message = await ctx.Channel.SendMessageAsync(raceInfo).ConfigureAwait(false);
-            await Message.ModifyAsync(msg => msg.Content = "test [edited]");
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendanceyes:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancenope:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancemaybe:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":regional_indicator_r:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":speaker:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":teamRacingPoint:"));
-
-        }
-
-        //Poll
-        [Command("pollTest")]
-        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task PollTest(CommandContext ctx, TimeSpan duration, string pollID)//, params DiscordEmoji[] emojiOptions)
-        {
-            var interactivity = ctx.Client.GetInteractivity();
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Title = "PollTest"//,
-                //Description = string.Join("", options)
-            };
-
-            var pollMessage = await ctx.Channel.SendMessageAsync(embed: embed).ConfigureAwait(false);
-
-            string[] emojiOptions = new string[]
-            {
-                ":attendanceyes:"
-                , ":attendancenope:"
-                , ":attendancemaybe:"
-                , ":regional_indicator_r:"
-                , ":speaker:"
-            };
-
-            for (int i = 0; i < emojiOptions.Length; i++)
-            {
-                await pollMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, emojiOptions[i])).ConfigureAwait(false);
-            }
-
-            var result = await interactivity.CollectReactionsAsync(pollMessage, duration).ConfigureAwait(false);
-            var distinctResult = result.Distinct();
-
-            foreach (var elm in distinctResult)
-            {
-                var emoji = elm.Emoji.Name.ToString();
-                var user = elm.Users.ToList();
-                var username = user[0].Username;
-
-                string reaction = "<" + username + ">" + emoji + "|" + pollMessage.Id.ToString();
-                Console.WriteLine(reaction);
-                ReadWrite.Write(reaction);
-            }
-
-
-
-            var results = result.Select(x => $"{x.Emoji}: {x.Total}");
-
-            await ctx.Channel.SendMessageAsync(string.Join("\n", results)).ConfigureAwait(false);
-        }
-
         //Poll Command
         [Command("Poll")]
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
@@ -201,202 +86,70 @@ namespace ConsoleApp1.Commands
             }
 
         }
-
-        //Mute User
-        [Command("Mute")]
-        [Description("Mute a user for a set time")]
-        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task Mute(CommandContext ctx, [Description("User to mute")] DiscordMember user, [Description("Duration of mute time in minutes")] int time)
+        //Test SQL
+        /*
+        [Command("SQL")]
+        public async Task SQL(CommandContext ctx)
         {
-            //Get role
-            DiscordRole muteRole = ctx.Guild.GetRole(862770194475646996);
+            string result = SQLConnection.Connection();
+            await ctx.Channel.SendMessageAsync(result).ConfigureAwait(false);
+        }
+        */
 
-            await user.GrantRoleAsync(muteRole);
-            await ctx.Channel.SendMessageAsync(user.Username + " has been sent to Principle O’Shaughnessy office for " + time + " minutes").ConfigureAwait(false);
+        //Add Driver
+        [Command("Add")]
+        [Description("Add a driver")]
+        public async Task Add(CommandContext ctx, [Description("Driver to add")] DiscordMember driver, [Description("Tier to add driver to")] string tier, [Description("Team to add driver to")] int team)
+        {
+            //Get driver
+            int driverID = (int)driver.Id;
+            string driverName = driver.Username;
 
-            //Sleep for x amount of minutes
-            System.Threading.Thread.Sleep(time * 60 * 1000);
+            await ctx.Channel.SendMessageAsync(driverID + " " + driverName + " has not been added to the database yet but I found him so that's a good start").ConfigureAwait(false);
 
-            //Unmute user
-            await user.RevokeRoleAsync(muteRole).ConfigureAwait(false);
+
+            //Call SP
+
         }
 
-        //Delete all messaged in a channel, can't delete messages older than 14 days
-        [Command("DeleteLast")]
-        [Description("Deletes all messaged in a channel, can't delete messages older than 14 days")]
-        [RequireRoles(RoleCheckMode.Any, "Admins")]
-        public async Task DeleteLast(CommandContext ctx, [Description("How many messages to delete. Limit is 100")] int amount)
+        //Read Teams
+        //[Command("Listteams")]
+        //[Description("List all teams")]
+
+        //Add Team
+        [Command("Addteam")]
+        [Description("Add a Team")]
+        public async Task AddTeam(CommandContext ctx, [Description("Team ID")] int id, [Description("Team name")] string teamname)
         {
-            var messages = await ctx.Channel.GetMessagesAsync(amount + 1);
-            await ctx.Channel.DeleteMessagesAsync(messages);
+            //call SP
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("EXECUTE AddTeam @id = " + id + ", @teamName = " + teamname);
+            string sqlQuery = strBuilder.ToString();
+            //SqlConnection conn = new SqlConnection(connString);
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery(); //execute the Query
+                Console.WriteLine("Query Executed.");
+            }
         }
 
-        //Lock Incidents
-        [Command("LockIncidents")]
-        [Description("Locks incident channels from Tier X roles")]
-        [RequireRoles(RoleCheckMode.Any, "Admins", "Head Steward")]
-        public async Task LockIncidents(CommandContext ctx)
-        {
-            //Lock Tier 1 incident channel
-            var channelToLock = ctx.Guild.GetChannel(683482799780528128);
-            var roleToLock = ctx.Guild.GetRole(491762196775305227);
-            var reserveRole = ctx.Guild.GetRole(360955418870022144);
-            await channelToLock.AddOverwriteAsync(roleToLock, Permissions.None);
-            await channelToLock.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock.SendMessageAsync($"<@&{roleToLock.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
+        //Update Team
 
-            //Lock Tier 2 incident channel
-            var channelToLock2 = ctx.Guild.GetChannel(658120861299245057);
-            var roleToLock2 = ctx.Guild.GetRole(595188325569265664);
-            await channelToLock2.AddOverwriteAsync(roleToLock2, Permissions.None);
-            await channelToLock2.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock2.SendMessageAsync($"<@&{roleToLock2.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
+        //Delete Team
 
-            //Lock Tier 3 incident channel
-            var channelToLock3 = ctx.Guild.GetChannel(861893292715409408);
-            var roleToLock3 = ctx.Guild.GetRole(866464597707849760);
-            await channelToLock3.AddOverwriteAsync(roleToLock3, Permissions.None);
-            await channelToLock3.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock3.SendMessageAsync($"<@&{roleToLock3.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
-        }
+        /*
+        //create a new SQL Query using StringBuilder
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.Append("INSERT INTO Student_details (Name, Email, Class) VALUES ");
+                strBuilder.Append("(N'Harsh', N'harsh@gmail.com', N'Class X'), ");
+                strBuilder.Append("(N'Ronak', N'ronak@gmail.com', N'Class X') ");
 
-        //Unlock Incidents
-        [Command("UnlockIncidents")]
-        [Description("Unlocks incident channels from Tier X roles")]
-        [RequireRoles(RoleCheckMode.Any, "Admins", "Head Steward")]
-        public async Task UnlockIncidents(CommandContext ctx)
-        {
-            //Unlock Tier 1 incident channel
-            var channelToUnlock = ctx.Guild.GetChannel(683482799780528128);
-            var roleToUnlock = ctx.Guild.GetRole(491762196775305227);
-            var reserveRole = ctx.Guild.GetRole(360955418870022144);
-            await channelToUnlock.AddOverwriteAsync(roleToUnlock, Permissions.SendMessages);
-            await channelToUnlock.AddOverwriteAsync(reserveRole, Permissions.SendMessages);
-            await channelToUnlock.SendMessageAsync($"<@&{roleToUnlock.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
-
-            //Unlock Tier 1 incident channel
-            var channelToUnlock2 = ctx.Guild.GetChannel(683482799780528128);
-            var roleToUnlock2 = ctx.Guild.GetRole(491762196775305227);
-            await channelToUnlock2.AddOverwriteAsync(roleToUnlock2, Permissions.SendMessages);
-            await channelToUnlock2.AddOverwriteAsync(reserveRole, Permissions.SendMessages);
-            await channelToUnlock2.SendMessageAsync($"<@&{roleToUnlock2.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
-
-            //Unlock Tier 1 incident channel
-            var channelToUnlock3 = ctx.Guild.GetChannel(683482799780528128);
-            var roleToUnlock3 = ctx.Guild.GetRole(491762196775305227);
-            await channelToUnlock3.AddOverwriteAsync(roleToUnlock3, Permissions.SendMessages);
-            await channelToUnlock3.AddOverwriteAsync(reserveRole, Permissions.SendMessages);
-            await channelToUnlock3.SendMessageAsync($"<@&{roleToUnlock3.Id}>" + ", " + $"<@&{reserveRole.Id}>" + " Incident reporting is now locked");
-        }
-
-        //Create adhoc voice channel on a timer
-        [Command("CreateVoice")]
-        [Description("Create adhoc voice channel on a timer")]
-        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task CreateVoice(CommandContext ctx, [Description("Name of channel")] string name, [Description("time in minutes until channel is nuked")] int time)
-        {
-            var tempChannel = await ctx.Guild.CreateVoiceChannelAsync(name, null, null, 20);
-            await ctx.Channel.SendMessageAsync(name + "voie channel has been created and will be deleted in " + time + " minutes").ConfigureAwait(false);
-            System.Threading.Thread.Sleep(time * 60 * 1000);
-            await tempChannel.DeleteAsync();
-        }
+                string sqlQuery = strBuilder.ToString();
+                using (SqlCommand command = new SqlCommand(sqlQuery, conn)) //pass SQL query created above and connection
+                {
+                    command.ExecuteNonQuery(); //execute the Query
+                    Console.WriteLine("Query Executed.");
+                }
+        */
     }
-
-    /*
-    class Drivers
-    {
-        public string driver { get; set; }
-        public string driverReaction { get; set; }
-    }
-    */
 }
-
-
-
-/*
-Read and update messages
-var Message = await ctx.Channel.GetMessageAsync(854885329332076554);
-await Message.ModifyAsync(msg => msg.Content = "test [edited]");
-
-
-old code
-            await ctx.Channel.SendMessageAsync(message.Result.Emoji).ConfigureAwait(false);
-            await ctx.Channel.SendMessageAsync(message.Result.User.Username).ConfigureAwait(false);
-            await ctx.Channel.SendMessageAsync(message.Result.Message.Id.ToString()).ConfigureAwait(false);
-
-Ways to get members
-            var member = ctx.Message.MentionedUsers.First();
-            await DiscordMember dmember = ctx.Guild.GetMemberAsync(member.Id);
-            var userToMute = ctx.Client.GetUserAsync((ulong)Convert.ToInt64(Regex.Replace(user, "[^0-9]", "")));
-
-Roles
-
-
-            var role = "";
-            var userid = message.Result.User.Id;
-            var test = ctx.Client.GetUserAsync(userid);
-            ctx.Client.getus
-            //ctx.Client.Get
-
-            
-            
-            //message.Result.User
-            var user = ctx.Member.Roles.ToArray(); //This lists all channel roles
-            var currentuser = ctx.Client.CurrentUser.Id;
-
-            string[] userRoles = (from o in user
-                                  select o.ToString()).ToArray();
-
-            if (userRoles.Contains("Role 283726114436677633; BWT Racing Point F1 Team"))
-            {
-                role = "BWT Racing Point F1 Team";
-            }
-            else if (role == "" && userRoles.Contains("Role 283725844524826635; Scuderia Ferrari"))
-            {
-                role = "Scuderia Ferrari";
-            }
-            else if (role == "" && userRoles.Contains("Role 283726027702665216; Williams Racing"))
-            {
-                role = "Williams Racing";
-            }
-            else if (role == "" && userRoles.Contains("Role 283726063316762624; Haas F1 Team"))
-            {
-                role = "Haas F1 Team";
-            }
-            else if (role == "" && userRoles.Contains("Role 283725451942428673; Mercedes AMG Petronas F1 Team"))
-            {
-                role = "Mercedes AMG Petronas F1 Team";
-            }
-            else if (role == "" && userRoles.Contains("Role 283726208846266379; Scuderia Alpha Tauri Honda"))
-            {
-                role = "Scuderia Alpha Tauri Honda";
-            }
-            else if (role == "" && userRoles.Contains("Role 283726296083595265; McLaren F1 Team"))
-            {
-                role = "McLaren F1 Team";
-            }
-            else if (role == "" && userRoles.Contains("Role 283726376820015105; Renault DP World F1 Team"))
-            {
-                role = "Renault DP World F1 Team";
-            }
-            else if (role == "" && userRoles.Contains("Role 283725954264596481; Aston Martin Red Bull Racing"))
-            {
-                role = "Aston Martin Red Bull Racing";
-            }
-            else if (role == "" && userRoles.Contains("Role 283726652549234689; Alfa Romeo Racing ORLEN"))
-            {
-                role = "Alfa Romeo Racing ORLEN";
-            }
-            else if (role == "" && userRoles.Contains("Role 360955418870022144; Reserve Drivers"))
-            {
-                role = "Reserve Drivers";
-            }
-            else if (role == "" && userRoles.Contains("Role 604927082316693515; Commentator"))
-            {
-                role = "Commentator";
-            }
-            else
-            {
-                role = "IMPOSTER!!!";
-            }
- */

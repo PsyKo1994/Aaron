@@ -60,6 +60,8 @@ namespace ConsoleApp1
             Commands = Client.UseCommandsNext(commandsConfig);
 
             Commands.RegisterCommands<General>();
+            Commands.RegisterCommands<EasterEggs>();
+            Commands.RegisterCommands<Moderator>();
 
             await Client.ConnectAsync();
             await Task.Delay(-1);
