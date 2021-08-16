@@ -20,6 +20,7 @@ namespace ConsoleApp1.Commands
         [Command("Band")]
         public async Task Ping(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.Channel.SendMessageAsync("Band is a dirty driver").ConfigureAwait(false);
             await ctx.Channel.SendMessageAsync("But don't wake the dragon, he might run out of fuel").ConfigureAwait(false);
         }
@@ -35,7 +36,10 @@ namespace ConsoleApp1.Commands
         [Command("Starz")]
         public async Task Starz(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync("I love how T1 has so many incidents and T2 is pure clean racing. We are the more superior lads").ConfigureAwait(false);
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("https://media.discordapp.net/attachments/854215294838898711/876621180084305990/image0.png").ConfigureAwait(false);
+         
+            //await ctx.Channel.SendMessageAsync("I love how T1 has so many incidents and T2 is pure clean racing. We are the more superior lads").ConfigureAwait(false);
         }
 
         //Command
@@ -43,6 +47,13 @@ namespace ConsoleApp1.Commands
         public async Task Panda(CommandContext ctx)
         {
             await ctx.Channel.SendMessageAsync("Christian Horner himself graces us with his presence").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Trin")]
+        public async Task Trin(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync("Hang on, he's checking his emails").ConfigureAwait(false);
         }
 
         //Command to respond to thank you
