@@ -22,6 +22,7 @@ namespace ConsoleApp1.Commands
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task Mute(CommandContext ctx, [Description("User to mute")] DiscordMember user, [Description("Duration of mute time in minutes")] int time)
         {
+            await ctx.Message.DeleteAsync();
             //Get role
             DiscordRole muteRole = ctx.Guild.GetRole(862770194475646996);
 
@@ -51,6 +52,7 @@ namespace ConsoleApp1.Commands
         [RequireRoles(RoleCheckMode.Any, "Admins", "Head Steward")]
         public async Task LockIncidents(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             //Lock Tier 1 incident channel
             var channelToLock = ctx.Guild.GetChannel(683482799780528128);
             var roleToLock = ctx.Guild.GetRole(491762196775305227);
@@ -80,6 +82,7 @@ namespace ConsoleApp1.Commands
         [RequireRoles(RoleCheckMode.Any, "Admins", "Head Steward")]
         public async Task UnlockIncidents(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             //Unlock Tier 1 incident channel
             var channelToUnlock = ctx.Guild.GetChannel(683482799780528128);
             var roleToUnlock = ctx.Guild.GetRole(491762196775305227);
@@ -109,6 +112,7 @@ namespace ConsoleApp1.Commands
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task CreateVoice(CommandContext ctx, [Description("Name of channel")] string name, [Description("time in minutes until channel is nuked")] int time)
         {
+            await ctx.Message.DeleteAsync();
             var tempChannel = await ctx.Guild.CreateVoiceChannelAsync(name, null, null, 20);
             await ctx.Channel.SendMessageAsync(name + "voie channel has been created and will be deleted in " + time + " minutes").ConfigureAwait(false);
             System.Threading.Thread.Sleep(time * 60 * 1000);

@@ -7,6 +7,7 @@ using Microsoft.Build.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -101,6 +102,7 @@ namespace ConsoleApp1.Commands
         [Description("Add a driver")]
         public async Task Add(CommandContext ctx, [Description("Driver to add")] DiscordMember driver, [Description("Tier to add driver to")] string tier, [Description("Team to add driver to")] int team)
         {
+            await ctx.Message.DeleteAsync();
             //Get driver
             int driverID = (int)driver.Id;
             string driverName = driver.Username;
@@ -112,44 +114,36 @@ namespace ConsoleApp1.Commands
 
         }
 
-        //Read Teams
-        //[Command("Listteams")]
-        //[Description("List all teams")]
-
-        //Add Team
-        [Command("Addteam")]
-        [Description("Add a Team")]
-        public async Task AddTeam(CommandContext ctx, [Description("Team ID")] int id, [Description("Team name")] string teamname)
+        //List Teams
+        [Command("Listteams")]
+        [Description("List all teams")]
+        public async Task Listteams(CommandContext ctx)
         {
-            //call SP
+            await ctx.Message.DeleteAsync();
             StringBuilder strBuilder = new StringBuilder();
-            strBuilder.Append("EXECUTE AddTeam @id = " + id + ", @teamName = " + teamname);
+            strBuilder.Append("SELECT * FROM teams");
             string sqlQuery = strBuilder.ToString();
             //SqlConnection conn = new SqlConnection(connString);
             using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
             {
-                command.ExecuteNonQuery(); //execute the Query
-                Console.WriteLine("Query Executed.");
-            }
-        }
+                command.ExecuteNonQuery();
+                DataSet ds = new DataSet();
+                DataTable table = new DataTable();
+                table.Load(command.ExecuteReader());
+                ds.Tables.Add(table);
 
-        //Update Team
-
-        //Delete Team
-
-        /*
-        //create a new SQL Query using StringBuilder
-        StringBuilder strBuilder = new StringBuilder();
-        strBuilder.Append("INSERT INTO Student_details (Name, Email, Class) VALUES ");
-                strBuilder.Append("(N'Harsh', N'harsh@gmail.com', N'Class X'), ");
-                strBuilder.Append("(N'Ronak', N'ronak@gmail.com', N'Class X') ");
-
-                string sqlQuery = strBuilder.ToString();
-                using (SqlCommand command = new SqlCommand(sqlQuery, conn)) //pass SQL query created above and connection
+                //Build list
+                List<string> teamsList = new List<string>();
+                for (int i = 0; i < table.Rows.Count; i++)
                 {
-                    command.ExecuteNonQuery(); //execute the Query
-                    Console.WriteLine("Query Executed.");
+                    teamsList.Add(table.Rows[i]["id"].ToString() + " " + table.Rows[i]["teamName"].ToString());
                 }
-        */
+
+                //Write out list
+                string combindedString = string.Join("\n", teamsList.ToArray());
+                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+            }
+
+        }
     }
 }

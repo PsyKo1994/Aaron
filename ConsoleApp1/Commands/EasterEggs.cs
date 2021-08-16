@@ -29,6 +29,7 @@ namespace ConsoleApp1.Commands
         [Command("PsyKo")]
         public async Task PsyKo(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.Channel.SendMessageAsync("The man, the myth, the legend himself").ConfigureAwait(false);
         }
 
@@ -46,6 +47,7 @@ namespace ConsoleApp1.Commands
         [Command("Panda")]
         public async Task Panda(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.Channel.SendMessageAsync("Christian Horner himself graces us with his presence").ConfigureAwait(false);
         }
 
@@ -53,7 +55,8 @@ namespace ConsoleApp1.Commands
         [Command("Trin")]
         public async Task Trin(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync("Hang on, he's checking his emails").ConfigureAwait(false);
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("Trin, I sent you an email. Have you received it?").ConfigureAwait(false);
         }
 
         //Command to respond to thank you
