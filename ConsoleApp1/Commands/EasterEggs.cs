@@ -59,6 +59,47 @@ namespace ConsoleApp1.Commands
             await ctx.Channel.SendMessageAsync("Trin, I sent you an email. Have you received it?").ConfigureAwait(false);
         }
 
+        //Command
+        [Command("Judge")]
+        [RequireRoles(RoleCheckMode.Any, "Admins")]
+        public async Task Judge(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("https://media.discordapp.net/attachments/854215294838898711/876780658821832714/unknown.gif").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Time")]
+        [RequireRoles(RoleCheckMode.Any, "Admins")]
+        public async Task Time(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/854215294838898711/876780456681537596/unknown.gif").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Waheed")]
+        public async Task Waheed(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("https://media.discordapp.net/attachments/854215294838898711/876701798184910888/unknown.png").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Gus")]
+        public async Task Gus(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync(":flag_bh:").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Aaron")]
+        public async Task Aaron(CommandContext ctx, [Description("User to message")]  DiscordMember user)
+        {
+            await ctx.Message.DeleteAsync();
+            await user.SendMessageAsync("https://tenor.com/view/key-and-peele-messed-up-aaron-gif-9848731").ConfigureAwait(false);
+        }
+
         //Command to respond to thank you
         [Command("GoodBot")]
         public async Task PingReply(CommandContext ctx)
