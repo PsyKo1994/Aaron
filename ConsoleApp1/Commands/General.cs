@@ -87,32 +87,6 @@ namespace ConsoleApp1.Commands
             }
 
         }
-        //Test SQL
-        /*
-        [Command("SQL")]
-        public async Task SQL(CommandContext ctx)
-        {
-            string result = SQLConnection.Connection();
-            await ctx.Channel.SendMessageAsync(result).ConfigureAwait(false);
-        }
-        */
-
-        //Add Driver
-        [Command("Add")]
-        [Description("Add a driver")]
-        public async Task Add(CommandContext ctx, [Description("Driver to add")] DiscordMember driver, [Description("Tier to add driver to")] string tier, [Description("Team to add driver to")] int team)
-        {
-            await ctx.Message.DeleteAsync();
-            //Get driver
-            int driverID = (int)driver.Id;
-            string driverName = driver.Username;
-
-            await ctx.Channel.SendMessageAsync(driverID + " " + driverName + " has not been added to the database yet but I found him so that's a good start").ConfigureAwait(false);
-
-
-            //Call SP
-
-        }
 
         //List Teams
         [Command("Listteams")]
@@ -123,7 +97,6 @@ namespace ConsoleApp1.Commands
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.Append("SELECT * FROM teams");
             string sqlQuery = strBuilder.ToString();
-            //SqlConnection conn = new SqlConnection(connString);
             using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
             {
                 command.ExecuteNonQuery();
@@ -145,5 +118,45 @@ namespace ConsoleApp1.Commands
             }
 
         }
+
+        //Add Driver
+        [Command("Add")]
+        [Description("Add a driver")]
+        public async Task Add(CommandContext ctx, [Description("Driver to add")] DiscordMember user, [Description("Team to add driver to")] int team, [Description("Tier to add driver to")] string tier)
+        {
+            await ctx.Message.DeleteAsync();
+
+            //Get values
+            ulong driverID = user.Id;
+            string driver = user.Username;
+
+            //Build string and call SP
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("EXEC AddDriver " + "@driverID = " + driverID + ", @driver = " + driver + ", @team = " + team + ", @tier = " + tier);
+            string sqlQuery = strBuilder.ToString();
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery();
+                using (SqlDataReader dr = command.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        string result = dr[0].ToString();
+                        await ctx.Channel.SendMessageAsync(result.ToString()).ConfigureAwait(false);
+                    }
+                }
+            }
+
+        }
     }
 }
+
+//Test SQL
+/*
+[Command("SQL")]
+public async Task SQL(CommandContext ctx)
+{
+    string result = SQLConnection.Connection();
+    await ctx.Channel.SendMessageAsync(result).ConfigureAwait(false);
+}
+*/

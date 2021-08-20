@@ -28,6 +28,8 @@ namespace ConsoleApp1.Commands
 
             await user.GrantRoleAsync(muteRole);
             await ctx.Channel.SendMessageAsync(user.Username + " has been sent to Principle O’Shaughnessy office for " + time + " minutes").ConfigureAwait(false);
+            await user.SendMessageAsync("https://tenor.com/view/key-and-peele-messed-up-aaron-gif-9848731").ConfigureAwait(false);
+            await user.SendMessageAsync("Your actions have resulted in a temporary mute in text channels in AFR. Please take this time to think about how you respond").ConfigureAwait(false);
 
             //Sleep for x amount of minutes
             System.Threading.Thread.Sleep(time * 60 * 1000);
