@@ -30,7 +30,7 @@ namespace ConsoleApp1.Commands
         public async Task PsyKo(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.Channel.SendMessageAsync("The man, the myth, the legend himself").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("Did PsyKo DNF again?").ConfigureAwait(false);
         }
 
         //Command
@@ -47,7 +47,6 @@ namespace ConsoleApp1.Commands
         [Command("Panda")]
         public async Task Panda(CommandContext ctx)
         {
-            await ctx.Message.DeleteAsync();
             await ctx.Channel.SendMessageAsync("Christian Horner himself graces us with his presence").ConfigureAwait(false);
         }
 
@@ -83,6 +82,15 @@ namespace ConsoleApp1.Commands
         {
             await ctx.Message.DeleteAsync();
             await ctx.Channel.SendMessageAsync("https://media.discordapp.net/attachments/854215294838898711/876701798184910888/unknown.png").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Nut")]
+        public async Task Nut(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync(); 
+            await ctx.Channel.SendMessageAsync("The mans the mith the menace").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("https://tenor.com/view/nut-button-hold-on-nut-anime-gif-12031314").ConfigureAwait(false);
         }
 
         //Command
