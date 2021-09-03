@@ -157,6 +157,7 @@
     <Compile Include="Commands\General.cs" />
     <Compile Include="Commands\Moderator.cs" />
     <Compile Include="ConfigJson.cs" />
+    <Compile Include="Driver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadWrite.cs" />

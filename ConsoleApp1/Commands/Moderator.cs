@@ -27,7 +27,7 @@ namespace ConsoleApp1.Commands
             DiscordRole muteRole = ctx.Guild.GetRole(862770194475646996);
 
             await user.GrantRoleAsync(muteRole);
-            await ctx.Channel.SendMessageAsync(user.Username + " has been sent to Principle O’Shaughnessy office for " + time + " minutes").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(user.Username + " has been sent to Principal O’Shaughnessy's office for " + time + " minutes").ConfigureAwait(false);
             await user.SendMessageAsync("https://tenor.com/view/key-and-peele-messed-up-aaron-gif-9848731").ConfigureAwait(false);
             await user.SendMessageAsync("Your actions have resulted in a temporary mute in text channels in AFR. Please take this time to think about how you respond").ConfigureAwait(false);
 

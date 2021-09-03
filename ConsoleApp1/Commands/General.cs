@@ -12,6 +12,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp1.Commands
@@ -119,9 +120,9 @@ namespace ConsoleApp1.Commands
 
         }
 
-        //Add Driver
+        //Add / Update Driver
         [Command("Add")]
-        [Description("Add a driver")]
+        [Description("Adds or updates a driver")]
         public async Task Add(CommandContext ctx, [Description("Driver to add")] DiscordMember user, [Description("Team to add driver to")] int team, [Description("Tier to add driver to")] string tier)
         {
             await ctx.Message.DeleteAsync();
@@ -132,7 +133,7 @@ namespace ConsoleApp1.Commands
 
             //Build string and call SP
             StringBuilder strBuilder = new StringBuilder();
-            strBuilder.Append("EXEC AddDriver " + "@driverID = " + driverID + ", @driver = " + driver + ", @team = " + team + ", @tier = " + tier);
+            strBuilder.Append("EXEC AddDriver " + "@driverID = " + driverID + ", @driver = " + "'" + driver + "'" + ", @team = " + team + ", @tier = " + tier);
             string sqlQuery = strBuilder.ToString();
             using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
             {
@@ -142,12 +143,48 @@ namespace ConsoleApp1.Commands
                     while (dr.Read())
                     {
                         string result = dr[0].ToString();
-                        await ctx.Channel.SendMessageAsync(result.ToString()).ConfigureAwait(false);
+                        var Message = await ctx.Channel.SendMessageAsync(result.ToString()).ConfigureAwait(false);
+                        Thread.Sleep(60000);
+                        await ctx.Channel.DeleteMessageAsync(Message).ConfigureAwait(false);
                     }
                 }
             }
 
         }
+
+        //Delete Driver
+
+        //Read all Drivers
+        [Command("ListAll")]
+        [Description("List all drivers in all tiers")]
+        public async Task ListAll(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("SELECT * FROM attendance");
+            string sqlQuery = strBuilder.ToString();
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery();
+                DataSet ds = new DataSet();
+                DataTable table = new DataTable();
+                table.Load(command.ExecuteReader());
+                ds.Tables.Add(table);
+
+                //Build list
+                List<string> teamsList = new List<string>();
+                for (int i = 0; i < table.Rows.Count; i++)
+                {
+                    teamsList.Add(table.Rows[i]["driver"].ToString() + " " + table.Rows[i]["team"].ToString() + " " + table.Rows[i]["tier"].ToString() + " " + table.Rows[i]["attendanceReaction"].ToString());
+                }
+                //driverID driver team tier attendanceReaction
+                //Write out list
+                string combindedString = string.Join("\n", teamsList.ToArray());
+                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+            }
+        }
+
+        //Read specific Tier
     }
 }
 
