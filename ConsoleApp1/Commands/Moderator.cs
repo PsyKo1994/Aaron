@@ -116,7 +116,7 @@ namespace ConsoleApp1.Commands
         {
             await ctx.Message.DeleteAsync();
             var tempChannel = await ctx.Guild.CreateVoiceChannelAsync(name, null, null, 20);
-            await ctx.Channel.SendMessageAsync(name + "voie channel has been created and will be deleted in " + time + " minutes").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(name + " voice channel has been created and will be deleted in " + time + " minutes").ConfigureAwait(false);
             System.Threading.Thread.Sleep(time * 60 * 1000);
             await tempChannel.DeleteAsync();
         }
