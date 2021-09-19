@@ -101,6 +101,13 @@ namespace ConsoleApp1.Commands
         }
 
         //Command
+        [Command("Hiro")]
+        public async Task Hiro(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync("It's Mr. Saturday!!!! (Sometimes)").ConfigureAwait(false);
+        }
+
+        //Command
         [Command("Aaron")]
         public async Task Aaron(CommandContext ctx, [Description("User to message")]  DiscordMember user)
         {
