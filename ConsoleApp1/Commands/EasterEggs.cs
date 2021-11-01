@@ -108,6 +108,22 @@ namespace ConsoleApp1.Commands
         }
 
         //Command
+        [Command("Lightz")]
+        public async Task Lightz(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("I thought Lightz had a mic?").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Pepsi")]
+        public async Task Pepsi(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            await ctx.Channel.SendMessageAsync("Coke > Pepsi").ConfigureAwait(false);
+        }
+
+        //Command
         [Command("Aaron")]
         public async Task Aaron(CommandContext ctx, [Description("User to message")]  DiscordMember user)
         {

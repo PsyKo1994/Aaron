@@ -1,6 +1,7 @@
 ﻿using ConsoleApp1.Commands;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -42,6 +43,27 @@ namespace ConsoleApp1
             Client = new DiscordClient(config);
 
             Client.Ready += OnClientReady;
+
+            //Logger
+            //Log when user deletes a message
+            Client.MessageDeleted += async (s, e) =>
+            {
+                var author = e.Message.Author;
+                var message = author.Username.ToString() + " Deleted this message: " + e.Message.Content;
+                DiscordChannel channel = e.Guild.GetChannel(904511634834341938);
+                await Client.SendMessageAsync(channel, message).ConfigureAwait(false);
+            };
+
+            //Log when user modifies a message
+            Client.MessageUpdated += async (s, e) =>
+            {
+                var author = e.Message.Author;
+                var oldMessage = author.Username.ToString() + " Updated this message - Old: " + e.MessageBefore.Content;
+                var message = author.Username.ToString() + " Updated this message - New: " + e.Message.Content;
+                DiscordChannel channel = e.Guild.GetChannel(904511634834341938);
+                await Client.SendMessageAsync(channel, oldMessage).ConfigureAwait(false);
+                await Client.SendMessageAsync(channel, message).ConfigureAwait(false);
+            };
 
             //Interactivity config
             Client.UseInteractivity(new InteractivityConfiguration
