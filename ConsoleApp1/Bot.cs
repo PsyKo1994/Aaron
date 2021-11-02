@@ -58,8 +58,8 @@ namespace ConsoleApp1
             Client.MessageUpdated += async (s, e) =>
             {
                 var author = e.Message.Author;
-                var oldMessage = author.Username.ToString() + " Updated this message - Old: " + e.MessageBefore.Content;
-                var message = author.Username.ToString() + " Updated this message - New: " + e.Message.Content;
+                var oldMessage =  "Original Post by " + author.Username.ToString() + " At " + e.MessageBefore.Timestamp + ": \n" + e.MessageBefore.Content;
+                var message = "Edited Post by " + author.Username.ToString() + " At " + e.MessageBefore.Timestamp + ": \n" + e.Message.Content;
                 DiscordChannel channel = e.Guild.GetChannel(904511634834341938);
                 await Client.SendMessageAsync(channel, oldMessage).ConfigureAwait(false);
                 await Client.SendMessageAsync(channel, message).ConfigureAwait(false);
