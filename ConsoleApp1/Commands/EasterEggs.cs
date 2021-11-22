@@ -30,7 +30,7 @@ namespace ConsoleApp1.Commands
         public async Task PsyKo(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.Channel.SendMessageAsync("Did PsyKo DNF again?").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(":flag_hu:").ConfigureAwait(false);
         }
 
         //Command
@@ -97,7 +97,7 @@ namespace ConsoleApp1.Commands
         [Command("Gus")]
         public async Task Gus(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync(":flag_bh:").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(":flag_be:").ConfigureAwait(false);
         }
 
         //Command
