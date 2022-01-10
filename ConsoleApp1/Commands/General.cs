@@ -47,9 +47,14 @@ namespace ConsoleApp1.Commands
                 var interactivity = ctx.Client.GetInteractivity();
                 var message = await interactivity.WaitForReactionAsync(x => x.Message.Id == Message.Id);
 
-                //string reaction = "<" + message.Result.User.Username + ">" + message.Result.Emoji + "|" + message.Result.Message.Id.ToString();
+                //Get timestamp of message and convert to Melbourne time
+                var time = DateTime.Now;
+                DateTime utcTime = time.ToUniversalTime();
+                TimeZoneInfo timeInfo = TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
+                DateTime userTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, timeInfo);
+
                 string reaction = "<" + message.Result.User.Username + ">" + message.Result.Emoji;
-                string reactionToAdd = message.Result.Emoji + "   " + message.Result.User.Username;
+                string reactionToAdd = message.Result.Emoji + "   " + message.Result.User.Username + "   " + userTime.ToString("MM/dd/yyyy HH:mm");
 
                 //Delete user reaction
                 if (message.Result.User.IsBot == false)

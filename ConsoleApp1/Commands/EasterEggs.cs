@@ -97,7 +97,9 @@ namespace ConsoleApp1.Commands
         [Command("Gus")]
         public async Task Gus(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync(":flag_be:").ConfigureAwait(false);
+            //await ctx.Channel.SendMessageAsync(":flag_bh: :flag_az: :flag_be:").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/854215294838898711/928085796316143677/unknown.gif").ConfigureAwait(false);
+            
         }
 
         //Command

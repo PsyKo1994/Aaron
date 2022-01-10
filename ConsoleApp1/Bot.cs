@@ -75,7 +75,6 @@ namespace ConsoleApp1
             Client.MessageDeleted += async (s, e) =>
             {
                 var author = e.Message.Author;
-                
                 //Only log messages not in list
                 if (!channelsToIgnore.Contains(e.Message.ChannelId))
                 {
