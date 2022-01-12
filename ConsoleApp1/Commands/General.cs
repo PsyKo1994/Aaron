@@ -158,7 +158,36 @@ namespace ConsoleApp1.Commands
         }
 
         //Delete Driver
+        [Command("Remove")]
+        [Description("Removes a driver")]
+        public async Task Remove(CommandContext ctx, [Description("Driver to remove")] DiscordMember user, [Description("Tier to remove driver from")] string tier)
+        {
+            await ctx.Message.DeleteAsync();
 
+            //Get values
+            ulong driverID = user.Id;
+            string driver = user.Username;
+
+            //Build string and call SP
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("EXEC RemoveDriver " + "@driverID = " + driverID + ", @driver = " + "'" + driver + "'" + ", @tier = " + tier);
+            string sqlQuery = strBuilder.ToString();
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery();
+                using (SqlDataReader dr = command.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        string result = dr[0].ToString();
+                        var Message = await ctx.Channel.SendMessageAsync(result.ToString()).ConfigureAwait(false);
+                        Thread.Sleep(60000);
+                        await ctx.Channel.DeleteMessageAsync(Message).ConfigureAwait(false);
+                    }
+                }
+            }
+
+        }
         //Read all Drivers
         [Command("ListAll")]
         [Description("List all drivers in all tiers")]
