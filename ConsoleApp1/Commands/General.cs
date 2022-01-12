@@ -160,17 +160,13 @@ namespace ConsoleApp1.Commands
         //Delete Driver
         [Command("Remove")]
         [Description("Removes a driver")]
-        public async Task Remove(CommandContext ctx, [Description("Driver to remove")] DiscordMember user, [Description("Tier to remove driver from")] string tier)
+        public async Task Remove(CommandContext ctx, [Description("DriverID to remove")] string driverID, [Description("Tier to remove driver from")] string tier)
         {
             await ctx.Message.DeleteAsync();
 
-            //Get values
-            ulong driverID = user.Id;
-            string driver = user.Username;
-
             //Build string and call SP
             StringBuilder strBuilder = new StringBuilder();
-            strBuilder.Append("EXEC RemoveDriver " + "@driverID = " + driverID + ", @driver = " + "'" + driver + "'" + ", @tier = " + tier);
+            strBuilder.Append("EXEC RemoveDriver " + "@driverID = " + driverID + ", @tier = " + tier);
             string sqlQuery = strBuilder.ToString();
             using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
             {
@@ -209,7 +205,7 @@ namespace ConsoleApp1.Commands
                 List<string> teamsList = new List<string>();
                 for (int i = 0; i < table.Rows.Count; i++)
                 {
-                    teamsList.Add(table.Rows[i]["driver"].ToString() + " " + table.Rows[i]["team"].ToString() + " " + table.Rows[i]["tier"].ToString() + " " + table.Rows[i]["attendanceReaction"].ToString());
+                    teamsList.Add(table.Rows[i]["driverID"].ToString() + " " + table.Rows[i]["driver"].ToString() + " " + table.Rows[i]["team"].ToString() + " " + table.Rows[i]["tier"].ToString() + " " + table.Rows[i]["attendanceReaction"].ToString());
                 }
                 //driverID driver team tier attendanceReaction
                 //Write out list
