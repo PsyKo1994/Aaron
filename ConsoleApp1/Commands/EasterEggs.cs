@@ -21,8 +21,10 @@ namespace ConsoleApp1.Commands
         public async Task Ping(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.Channel.SendMessageAsync("Band is a dirty driver").ConfigureAwait(false);
-            await ctx.Channel.SendMessageAsync("But don't wake the dragon, he might run out of fuel").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("Dragons are big, fierce, fiery and cool").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("Sometimes they sleep, slumber and drool").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("Waking the fierce beast, might just seem cruel").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("But if you don't, he might just run out of fuel").ConfigureAwait(false);
         }
 
         //Command
@@ -88,9 +90,7 @@ namespace ConsoleApp1.Commands
         [Command("Nut")]
         public async Task Nut(CommandContext ctx)
         {
-            await ctx.Message.DeleteAsync(); 
-            await ctx.Channel.SendMessageAsync("The mans the mith the menace").ConfigureAwait(false);
-            await ctx.Channel.SendMessageAsync("https://tenor.com/view/nut-button-hold-on-nut-anime-gif-12031314").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("https://tenor.com/view/captain-america-i-understood-that-reference-look-back-gif-14556485").ConfigureAwait(false);
         }
 
         //Command
@@ -123,6 +123,13 @@ namespace ConsoleApp1.Commands
         {
             await ctx.Message.DeleteAsync();
             await ctx.Channel.SendMessageAsync("Coke > Pepsi").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Kunai")]
+        public async Task Kunai(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync("They make me pay tax").ConfigureAwait(false);
         }
 
         //Command
