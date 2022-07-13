@@ -114,7 +114,7 @@ namespace ConsoleApp1.Commands
         public async Task Lightz(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.Channel.SendMessageAsync("I thought Lightz had a mic?").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("They make me pay tax").ConfigureAwait(false);
         }
 
         //Command
@@ -130,6 +130,13 @@ namespace ConsoleApp1.Commands
         public async Task Kunai(CommandContext ctx)
         {
             await ctx.Channel.SendMessageAsync("They make me pay tax").ConfigureAwait(false);
+        }
+
+        //Command
+        [Command("Smiddy")]
+        public async Task Smiddy(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync("Hey smiddy, it's gus").ConfigureAwait(false);
         }
 
         //Command
