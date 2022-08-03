@@ -20,9 +20,9 @@ namespace ConsoleApp1.Commands
     public class General : BaseCommandModule
     {
         //Poll Command
-        [Command("Poll")]
+        [Command("PollOld")]
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task Poll(CommandContext ctx)
+        public async Task PollOld(CommandContext ctx)
         {
             //Delete the poll command
             await ctx.Message.DeleteAsync();
@@ -95,9 +95,9 @@ namespace ConsoleApp1.Commands
         }
 
         //Poll Command
-        [Command("Poll2")]
+        [Command("Poll")]
         [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
-        public async Task Poll2(CommandContext ctx)
+        public async Task Poll(CommandContext ctx)
         {
             //Delete the poll command
             await ctx.Message.DeleteAsync();
@@ -107,8 +107,6 @@ namespace ConsoleApp1.Commands
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendanceyes:"));
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancenope:"));
             await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancemaybe:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":regional_indicator_r:"));
-            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":speaker:"));
         }
 
             //List Teams
