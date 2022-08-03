@@ -94,8 +94,25 @@ namespace ConsoleApp1.Commands
 
         }
 
-        //List Teams
-        [Command("Listteams")]
+        //Poll Command
+        [Command("Poll2")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
+        public async Task Poll2(CommandContext ctx)
+        {
+            //Delete the poll command
+            await ctx.Message.DeleteAsync();
+
+            //Create poll message
+            var Message = await ctx.Channel.SendMessageAsync("Poll").ConfigureAwait(false);
+            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendanceyes:"));
+            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancenope:"));
+            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":attendancemaybe:"));
+            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":regional_indicator_r:"));
+            await Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":speaker:"));
+        }
+
+            //List Teams
+            [Command("Listteams")]
         [Description("List all teams")]
         public async Task Listteams(CommandContext ctx)
         {
@@ -128,6 +145,7 @@ namespace ConsoleApp1.Commands
         //Add / Update Driver
         [Command("Add")]
         [Description("Adds or updates a driver")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task Add(CommandContext ctx, [Description("Driver to add")] DiscordMember user, [Description("Team to add driver to")] int team, [Description("Tier to add driver to")] string tier)
         {
             await ctx.Message.DeleteAsync();
@@ -160,6 +178,7 @@ namespace ConsoleApp1.Commands
         //Delete Driver
         [Command("Remove")]
         [Description("Removes a driver")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
         public async Task Remove(CommandContext ctx, [Description("DriverID to remove")] string driverID, [Description("Tier to remove driver from")] string tier)
         {
             await ctx.Message.DeleteAsync();
@@ -184,6 +203,7 @@ namespace ConsoleApp1.Commands
             }
 
         }
+
         //Read all Drivers
         [Command("ListAll")]
         [Description("List all drivers in all tiers")]
@@ -214,7 +234,110 @@ namespace ConsoleApp1.Commands
             }
         }
 
-        //Read specific Tier
+        //Read all Drivers in a specific Tier
+        [Command("List")]
+        [Description("List all drivers in a specific Tier")]
+        public async Task List(CommandContext ctx, [Description("Tier to list")] string tier)
+        {
+            await ctx.Message.DeleteAsync();
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("SELECT * FROM attendance WHERE tier = " + "'" + tier + "'");
+            string sqlQuery = strBuilder.ToString();
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery();
+                DataSet ds = new DataSet();
+                DataTable table = new DataTable();
+                table.Load(command.ExecuteReader());
+                ds.Tables.Add(table);
+
+                //Build list
+                List<string> teamsList = new List<string>();
+                for (int i = 0; i < table.Rows.Count; i++)
+                {
+                    teamsList.Add(table.Rows[i]["driverID"].ToString() + " " + table.Rows[i]["driver"].ToString() + " " + table.Rows[i]["team"].ToString() + " " + table.Rows[i]["tier"].ToString() + " " + table.Rows[i]["attendanceReaction"].ToString());
+                }
+                //driverID driver team tier attendanceReaction
+                //Write out list
+                string combindedString = string.Join("\n", teamsList.ToArray());
+                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+            }
+        }
+
+        //Reset Attendance
+        [Command("Reset")]
+        [Description("Resets the attendance form for the desired tier")]
+        [RequireRoles(RoleCheckMode.Any, "Moderator", "Admins")]
+        public async Task Reset(CommandContext ctx, [Description("Tier to reset")] string tier)
+        {
+            await ctx.Message.DeleteAsync();
+
+            //Check that the tier is legit, otherwise end
+            if (tier != "T1" && tier != "T2" && tier != "T3")
+            {
+                var Message = await ctx.Channel.SendMessageAsync("Please enter either T1/T2/T3 you muppet, I can't smell what you want me to do").ConfigureAwait(false);
+                Thread.Sleep(5000);
+                await ctx.Channel.DeleteMessageAsync(Message).ConfigureAwait(false);
+                return;
+            };
+
+            //Build string and call SQL
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("UPDATE attendance SET attendanceReaction = NULL WHERE tier = " + "'" + tier + "'");
+            string sqlQuery = strBuilder.ToString();
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery();
+                using (SqlDataReader dr = command.ExecuteReader())
+                {
+                    var Message = await ctx.Channel.SendMessageAsync("Attendance for " + tier + " has been reset").ConfigureAwait(false);
+                    Thread.Sleep(5000);
+                    await ctx.Channel.DeleteMessageAsync(Message).ConfigureAwait(false);
+                }
+            }
+
+        }
+
+        //Display attendance
+        [Command("Show")]
+        [Description("Show attendnace list for any given Tier")]
+        public async Task Show(CommandContext ctx, [Description("Tier to show")] string tier)
+        {
+            await ctx.Message.DeleteAsync();
+
+            //Check that the tier is legit, otherwise end
+            if (tier != "T1" && tier != "T2" && tier != "T3")
+            {
+                var Message = await ctx.Channel.SendMessageAsync("Please enter either T1/T2/T3 you muppet, I can't smell what you want me to do").ConfigureAwait(false);
+                Thread.Sleep(5000);
+                await ctx.Channel.DeleteMessageAsync(Message).ConfigureAwait(false);
+                return;
+            };
+
+            //Build string and call SP
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("SELECT teamName, driver, attendanceReaction FROM attendance INNER JOIN teams ON teams.id = attendance.team WHERE tier = " + "'" + tier + "'" + " ORDER BY id");
+            string sqlQuery = strBuilder.ToString();
+            using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+            {
+                command.ExecuteNonQuery();
+                DataSet ds = new DataSet();
+                DataTable table = new DataTable();
+                table.Load(command.ExecuteReader());
+                ds.Tables.Add(table);
+
+                //Build list
+                List<string> teamsList = new List<string>();
+                for (int i = 0; i < table.Rows.Count; i++)
+                {
+                    teamsList.Add(table.Rows[i]["attendanceReaction"].ToString() + ' ' + table.Rows[i]["teamName"].ToString() + " ----- " + table.Rows[i]["driver"].ToString());
+                }
+                
+                //Write out list
+                string combindedString = string.Join("\n", teamsList.ToArray());
+                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+            }
+        }
     }
 }
 

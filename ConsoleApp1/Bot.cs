@@ -8,8 +8,10 @@ using DSharpPlus.Interactivity.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp1
@@ -102,6 +104,59 @@ namespace ConsoleApp1
                         DiscordChannel channel = e.Guild.GetChannel(904511634834341938);
                         await Client.SendMessageAsync(channel, oldMessage).ConfigureAwait(false);
                         await Client.SendMessageAsync(channel, message).ConfigureAwait(false);
+                    }
+                }
+            };
+
+            //Update reactions for Attendnace V2
+            Client.MessageReactionAdded += async (s, e) =>
+            {
+                //Get Values
+                string reaction = "'" + e.Emoji + "'";
+                ulong driverID = e.User.Id;
+                string driver = e.User.Username;
+                ulong channel = e.Channel.Id;
+                string tier;
+
+                //Get correct Tier from channel where the reaction is used
+                switch (channel)
+                {
+                    case 448739662438072330:
+                        tier = "T1";
+                        break;
+                    case 595178511908732929:
+                        tier = "T2";
+                        break;
+                    case 861893058152103966:
+                        tier = "T3";
+                        break;
+                    default:
+                        tier = null;
+                        break;
+                }
+
+                //If Tier is still blank then the reaction isn't for attendance and we can end it here
+                if (tier == null)
+                {
+                    return;
+                }
+
+                //Build string and call SP
+                StringBuilder strBuilder = new StringBuilder();
+                strBuilder.Append("EXEC " + "UpdateAttendance " + "@reaction = " + reaction + ", @driverID = " + driverID + ", @driver = " + "'" + driver + "'" + ", @tier = " + tier);
+                string sqlQuery = strBuilder.ToString();
+                using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
+                {
+                    command.ExecuteNonQuery();
+                    using (SqlDataReader dr = command.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            string result = dr[0].ToString();
+                            var Message = await e.Channel.SendMessageAsync(result.ToString()).ConfigureAwait(false);
+                            Thread.Sleep(5000);
+                            await e.Channel.DeleteMessageAsync(Message).ConfigureAwait(false);
+                        }
                     }
                 }
             };

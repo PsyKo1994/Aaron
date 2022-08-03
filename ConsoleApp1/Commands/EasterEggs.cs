@@ -114,7 +114,7 @@ namespace ConsoleApp1.Commands
         public async Task Lightz(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.Channel.SendMessageAsync("They make me pay tax").ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync("they make me pay fucxing tacks").ConfigureAwait(false);
         }
 
         //Command
