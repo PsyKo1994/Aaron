@@ -281,7 +281,7 @@ namespace ConsoleApp1.Commands
 
             //Build string and call SQL
             StringBuilder strBuilder = new StringBuilder();
-            strBuilder.Append("UPDATE attendance SET attendanceReaction = NULL WHERE tier = " + "'" + tier + "'");
+            strBuilder.Append("UPDATE attendance SET attendanceReaction = NULL WHERE tier = " + "'" + tier + "'" + "DELETE from attendance WHERE team = 11 AND attendanceReaction IS NULL");
             string sqlQuery = strBuilder.ToString();
             using (SqlCommand command = new SqlCommand(sqlQuery, SQLConnection.Connection()))
             {
@@ -333,7 +333,14 @@ namespace ConsoleApp1.Commands
                 
                 //Write out list
                 string combindedString = string.Join("\n", teamsList.ToArray());
-                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+                {
+                    Color = DiscordColor.SpringGreen,
+                    Description = combindedString
+                };
+
+                await ctx.Channel.SendMessageAsync(embed: embed).ConfigureAwait(false);
             }
         }
     }
