@@ -61,21 +61,21 @@ namespace ConsoleApp1.Commands
             var reserveRole = ctx.Guild.GetRole(360955418870022144);
             await channelToLock.AddOverwriteAsync(roleToLock, Permissions.None);
             await channelToLock.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
+            //await channelToLock.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
 
             //Lock Tier 2 incident channel
             var channelToLock2 = ctx.Guild.GetChannel(658120861299245057);
             var roleToLock2 = ctx.Guild.GetRole(595188325569265664);
             await channelToLock2.AddOverwriteAsync(roleToLock2, Permissions.None);
             await channelToLock2.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock2.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
+            //await channelToLock2.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
 
             //Lock Tier 3 incident channel
             var channelToLock3 = ctx.Guild.GetChannel(861893292715409408);
             var roleToLock3 = ctx.Guild.GetRole(866464597707849760);
             await channelToLock3.AddOverwriteAsync(roleToLock3, Permissions.None);
             await channelToLock3.AddOverwriteAsync(reserveRole, Permissions.None);
-            await channelToLock3.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
+            //await channelToLock3.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
         }
 
         //Unlock Incidents

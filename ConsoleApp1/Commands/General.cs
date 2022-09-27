@@ -228,7 +228,13 @@ namespace ConsoleApp1.Commands
                 //driverID driver team tier attendanceReaction
                 //Write out list
                 string combindedString = string.Join("\n", teamsList.ToArray());
-                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+                {
+                    Color = DiscordColor.SpringGreen,
+                    Description = combindedString
+                };
+
+                await ctx.Channel.SendMessageAsync(embed: embed).ConfigureAwait(false);
             }
         }
 
@@ -258,7 +264,14 @@ namespace ConsoleApp1.Commands
                 //driverID driver team tier attendanceReaction
                 //Write out list
                 string combindedString = string.Join("\n", teamsList.ToArray());
-                await ctx.Channel.SendMessageAsync(combindedString).ConfigureAwait(false);
+
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+                {
+                    Color = DiscordColor.SpringGreen,
+                    Description = combindedString
+                };
+
+                await ctx.Channel.SendMessageAsync(embed: embed).ConfigureAwait(false);
             }
         }
 
