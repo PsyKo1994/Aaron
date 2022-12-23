@@ -79,13 +79,12 @@ namespace ConsoleApp1
                 var author = e.Message.Author;
 
                 //Only log messages not in list
-                if (!channelsToIgnore.Contains(e.Message.ChannelId))
+                if (!channelsToIgnore.Contains(e.Message.ChannelId) && author != null)
                 {
                     var message = author.Username.ToString() + " Deleted this message: " + e.Message.Content + "\nFrom this channel: " + e.Message.Channel.Name;
                     DiscordChannel channel = e.Guild.GetChannel(904511634834341938);
                     await Client.SendMessageAsync(channel, message).ConfigureAwait(false);
                 }
-
             };
 
             //Log when user modifies a message

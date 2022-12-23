@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp1.Commands
@@ -61,21 +62,21 @@ namespace ConsoleApp1.Commands
             var reserveRole = ctx.Guild.GetRole(360955418870022144);
             await channelToLock.AddOverwriteAsync(roleToLock, Permissions.None);
             await channelToLock.AddOverwriteAsync(reserveRole, Permissions.None);
-            //await channelToLock.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
+            await channelToLock.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
 
             //Lock Tier 2 incident channel
             var channelToLock2 = ctx.Guild.GetChannel(658120861299245057);
             var roleToLock2 = ctx.Guild.GetRole(595188325569265664);
             await channelToLock2.AddOverwriteAsync(roleToLock2, Permissions.None);
             await channelToLock2.AddOverwriteAsync(reserveRole, Permissions.None);
-            //await channelToLock2.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
+            await channelToLock2.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
 
             //Lock Tier 3 incident channel
             var channelToLock3 = ctx.Guild.GetChannel(861893292715409408);
             var roleToLock3 = ctx.Guild.GetRole(866464597707849760);
             await channelToLock3.AddOverwriteAsync(roleToLock3, Permissions.None);
             await channelToLock3.AddOverwriteAsync(reserveRole, Permissions.None);
-            //await channelToLock3.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
+            await channelToLock3.SendMessageAsync("Channel locked until Monday morning. If you have an incident to report, the stewards recommend discussing with the other party during the cooldown period and reconsider the need to report.");
         }
 
         //Unlock Incidents
@@ -119,6 +120,53 @@ namespace ConsoleApp1.Commands
             await ctx.Channel.SendMessageAsync(name + " voice channel has been created and will be deleted in " + time + " minutes").ConfigureAwait(false);
             System.Threading.Thread.Sleep(time * 60 * 1000);
             await tempChannel.DeleteAsync();
+        }
+
+        //Archive Incidents
+        [Command("Archive")]
+        [Description("Automatically archives all recent incidnets")]
+        [RequireRoles(RoleCheckMode.Any, "Admins", "Head Steward")]
+        public async Task Archive(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+
+            //Get channels to archive from
+            var t1 = ctx.Guild.GetChannel(950271525158805524);
+            var t2 = ctx.Guild.GetChannel(950271935315587134);
+            var t3 = ctx.Guild.GetChannel(950271859537092610);
+
+            //Get archive channel
+            var archive = ctx.Guild.GetChannel(682156056301797397);
+
+            //Load messages into context
+            var messagesT1 = await t1.GetMessagesAsync();
+            var messagesT2 = await t2.GetMessagesAsync();
+            var messagesT3 = await t3.GetMessagesAsync();
+
+            //Post messages to archive and delete them from original channels
+            foreach(var message in messagesT1)
+            {
+                await archive.SendMessageAsync(message.Content);
+                await message.DeleteAsync();
+            }
+
+            foreach (var message in messagesT2)
+            {
+                await archive.SendMessageAsync(message.Content);
+                await message.DeleteAsync();
+            }
+
+            foreach (var message in messagesT3)
+            {
+                await archive.SendMessageAsync(message.Content);
+                await message.DeleteAsync();
+            }
+
+            //Tell me about it
+            var response = await ctx.Channel.SendMessageAsync("Archived all incidents sir");
+            Thread.Sleep(5000);
+            await ctx.Channel.DeleteMessageAsync(response).ConfigureAwait(false);
+
         }
     }
 }
