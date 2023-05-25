@@ -25,7 +25,7 @@ namespace ConsoleApp1.Commands
         {
             await ctx.Message.DeleteAsync();
             //Get role
-            DiscordRole muteRole = ctx.Guild.GetRole(862770194475646996);
+            DiscordRole muteRole = ctx.Guild.GetRole(1111114949570347048);
 
             await user.GrantRoleAsync(muteRole);
             await ctx.Channel.SendMessageAsync(user.Username + " has been sent to Principal O’Shaughnessy's office for " + time + " minutes").ConfigureAwait(false);
